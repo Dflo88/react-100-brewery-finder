@@ -1,6 +1,6 @@
 # Welcome to Diego's Brewery Finder
 
-This web app was created to quickly find a brewery near you :beers:. A live version of this application can be found at [here](https://dflores7237-brewery-finder.herokuapp.com/). 
+This web app was created to quickly find a brewery near you :beers:. A live version of this application can be found [here](https://dflores7237-brewery-finder.herokuapp.com/). 
 
 ## Getting Started
 After cloning these files install your dependencies:
