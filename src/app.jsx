@@ -9,60 +9,51 @@ class App extends Component {
         super(props);
 // Notes on state: localBrewery will house the locations of local breweries using the OpenBreweryDB api.
 // currentLocation will house the users current location found using the freeGeoIP api or a user submitted data.
-// displayView will tell our application which views to render. A value of 1 will render the BreweryFinder component,
-// a value of 2 will render the BreweryLocations component and a value of 3 will display the ErrorMessage component, if
-// no local breweries were found.
+// displayView will tell our application which views to render.
         this.state = {
             localBrewery : [],
             currentLocation : [],
             displayView : 1,
          }
+         this.handleBreweryQuickFind = this.handleBreweryQuickFind.bind(this);
+         this.handleReturnToBreweryFinder = this.handleReturnToBreweryFinder.bind(this);
+         this.handleBreweryFindByUserInput = this.handleBreweryFindByUserInput.bind(this);
     };
 
     componentDidMount(){
             Axios.get('/api')
-            // .get('https://freegeoip.app/json/')
-            // .then(response => response.data)
             .then(currentLocation => this.setState({ currentLocation: {
                 city: currentLocation.data.city,
                 zip: currentLocation.data.zip,
                 state: currentLocation.data.region_name
             }}));
           }
-// The clickHandler function will look at the name of the button that was pressed using event.target.name. 
-//from there a code block will run depending on the button that was pushed. For example if the 'breweryQuickFindButton'
-// on the main page is pressed, then a code will execute a get request on our brewery finding API and update the 'localBrewery'
-//state with a list of the breweries supplied by the API. Then the code will update current view by updating the 'displayView' state
-// to view number two (which renders a list of the local breweries). The other buttons actions that are exectured here include the
-// 'returnToBreweryFinder' and 'breweryFindByUserInputButton' buttons.
-    clickHandler(event){
-        if (event.target.name == 'breweryQuickFindButton'){
-            Axios
+   
+    handleBreweryQuickFind() {
+        Axios
             .get(`https://api.openbrewerydb.org/breweries?by_postal=${this.state.currentLocation.zip}`)
             .then(response => response.data)
             .then(localBrewery => this.setState({ localBrewery }))
             .then(() => this.setState({ displayView : 2}));
-        } else if (event.target.name == 'returnToBreweryFinder'){
-            this.setState({ displayView : 1});
-            this.setState({localBrewery: []});
-        } else if (event.target.name == 'breweryFindByUserInputButton') {
-            let userEnteredZipcode = document.getElementById('userEnteredZipcode').value;
-            userEnteredZipcode.length != 5 ? alert('Please enter a 5 digit zipcode!') : 
-            Axios
-            .get(`https://api.openbrewerydb.org/breweries?by_postal=${userEnteredZipcode}`)
-            .then(response => response.data)
-            .then(localBrewery => this.setState({ localBrewery }))
-            .then( () => {
-                if (this.state.localBrewery.length == 0){
-                this.setState({displayView : 3});
-                } else {
-                this.setState({ displayView : 2 });
-                }
-            });
-        };
     };
+
+    handleReturnToBreweryFinder() {
+        this.setState({ displayView : 1});
+        this.setState({localBrewery: []});
+    };
+
+    handleBreweryFindByUserInput(userEnteredZipcode) {
+        userEnteredZipcode.length != 5 ? alert('Please enter a 5 digit zipcode!') : 
+        Axios
+        .get(`https://api.openbrewerydb.org/breweries?by_postal=${userEnteredZipcode}`)
+        .then(response => response.data)
+        .then(localBrewery => this.setState({ localBrewery }))
+        .then( () => {
+            this.state.localBrewery.length === 0 ? this.setState({displayView: 3}) : this.setState({displayView: 2});
+        });
+    }
     render(){
-        // the view that is displayed is rendered based on the state value for 'displayView'. If displayView
+        // The view that is displayed is rendered based on the state value for 'displayView'. If displayView
         // is equal to 1, then the <BreweryFinder> component will render. This componenet is used to search 
         //for a brewery. If displayView is equal to 2, then <BreweryLocations> will render which shows all the 
         //local breweries we found. If displayView is equal to 3, then <ErrorMessage> will render which shows a
@@ -70,7 +61,7 @@ class App extends Component {
         let currentView;
         switch(this.state.displayView){
             case 1:
-                currentView = <BreweryFinder clickHandler={this.clickHandler.bind(this)}/>
+                currentView = <BreweryFinder handleBreweryFindByUserInput={this.handleBreweryFindByUserInput} handleBreweryQuickFind={this.handleBreweryQuickFind}/>
                 break;
             case 2:
                 currentView = <div>
@@ -95,11 +86,11 @@ class App extends Component {
                                             />
                                         ))
                                     }
-                                    <button type='button' className='returnToBreweryFinderButton' name='returnToBreweryFinder' onClick={this.clickHandler.bind(this)}>Start a new brewery search!</button>
+                                    <button type='button' className='returnToBreweryFinderButton' onClick={this.handleReturnToBreweryFinder}>Start a new brewery search!</button>
                               </div>
                 break;
             case 3:
-                currentView = <ErrorMessage clickHandler={this.clickHandler.bind(this)}/> 
+                currentView = <ErrorMessage handleReturnToBreweryFinder={this.handleReturnToBreweryFinder}/> 
                 break;
         };
         return(
