@@ -21,13 +21,13 @@ class App extends Component {
     };
 
     componentDidMount(){
-            Axios.get('/api')
-            .then(currentLocation => this.setState({ currentLocation: {
-                city: currentLocation.data.city,
-                zip: currentLocation.data.zip,
-                state: currentLocation.data.region_name
-            }}));
-          }
+        Axios.get('/api')
+        .then(currentLocation => this.setState({ currentLocation: {
+            city: currentLocation.data.city,
+            zip: currentLocation.data.zip,
+            state: currentLocation.data.region_name
+        }}));
+    };
    
     handleBreweryQuickFind() {
         Axios
@@ -45,13 +45,13 @@ class App extends Component {
     handleBreweryFindByUserInput(userEnteredZipcode) {
         userEnteredZipcode.length != 5 ? alert('Please enter a 5 digit zipcode!') : 
         Axios
-        .get(`https://api.openbrewerydb.org/breweries?by_postal=${userEnteredZipcode}`)
-        .then(response => response.data)
-        .then(localBrewery => this.setState({ localBrewery }))
-        .then( () => {
-            this.state.localBrewery.length === 0 ? this.setState({displayView: 3}) : this.setState({displayView: 2});
-        });
-    }
+            .get(`https://api.openbrewerydb.org/breweries?by_postal=${userEnteredZipcode}`)
+            .then(response => response.data)
+            .then(localBrewery => this.setState({ localBrewery }))
+            .then( () => {
+                this.state.localBrewery.length === 0 ? this.setState({displayView: 3}) : this.setState({displayView: 2});
+            });
+    };
     render(){
         // The view that is displayed is rendered based on the state value for 'displayView'. If displayView
         // is equal to 1, then the <BreweryFinder> component will render. This componenet is used to search 
@@ -61,7 +61,7 @@ class App extends Component {
         let currentView;
         switch(this.state.displayView){
             case 1:
-                currentView = <BreweryFinder handleBreweryFindByUserInput={this.handleBreweryFindByUserInput} handleBreweryQuickFind={this.handleBreweryQuickFind}/>
+                currentView = <BreweryFinder handleBreweryFindByUserInput={() => this.handleBreweryFindByUserInput(document.getElementById('userEnteredZipcode').value)} handleBreweryQuickFind={this.handleBreweryQuickFind}/>;
                 break;
             case 2:
                 currentView = <div>
