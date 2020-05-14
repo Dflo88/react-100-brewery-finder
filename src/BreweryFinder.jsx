@@ -10,9 +10,7 @@ export default function BreweryFinder(props){
                 </div>
                 <div className='breweryLookUp'>
                     <p> Or you can look up breweries using a zipcode. Enter a five digit zipcode below and click the button to get started.</p>
-                    <form>
-                        <input type='number' id='userEnteredZipcode' placeholder='Zipcode' /><br/>                            
-                    </form>
+                    <input type='number' id='userEnteredZipcode' placeholder='Zipcode' onKeyDown={props.handleKeyPress}/><br/>                            
                     <button type='button' className='findBreweryByInputButton' onClick={props.handleBreweryFindByUserInput}>Find Breweries By Zip</button>
                 </div>
             </div>
