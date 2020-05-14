@@ -18,9 +18,10 @@ class App extends Component {
          this.handleBreweryQuickFind = this.handleBreweryQuickFind.bind(this);
          this.handleReturnToBreweryFinder = this.handleReturnToBreweryFinder.bind(this);
          this.handleBreweryFindByUserInput = this.handleBreweryFindByUserInput.bind(this);
+         this.handleKeyPress = this.handleKeyPress.bind(this);
     };
 
-    componentDidMount(){
+    componentDidMount() {
         Axios.get('/api')
         .then(currentLocation => this.setState({ currentLocation: {
             city: currentLocation.data.city,
@@ -42,7 +43,8 @@ class App extends Component {
         this.setState({localBrewery: []});
     };
 
-    handleBreweryFindByUserInput(userEnteredZipcode) {
+    handleBreweryFindByUserInput() {
+        let userEnteredZipcode = document.getElementById('userEnteredZipcode').value
         userEnteredZipcode.length != 5 ? alert('Please enter a 5 digit zipcode!') : 
         Axios
             .get(`https://api.openbrewerydb.org/breweries?by_postal=${userEnteredZipcode}`)
@@ -52,6 +54,11 @@ class App extends Component {
                 this.state.localBrewery.length === 0 ? this.setState({displayView: 3}) : this.setState({displayView: 2});
             });
     };
+
+    handleKeyPress(event) {
+        if (event.keyCode === 13) this.handleBreweryFindByUserInput();
+    };
+    
     render(){
         // The view that is displayed is rendered based on the state value for 'displayView'. If displayView
         // is equal to 1, then the <BreweryFinder> component will render. This componenet is used to search 
@@ -61,7 +68,7 @@ class App extends Component {
         let currentView;
         switch(this.state.displayView){
             case 1:
-                currentView = <BreweryFinder handleBreweryFindByUserInput={() => this.handleBreweryFindByUserInput(document.getElementById('userEnteredZipcode').value)} handleBreweryQuickFind={this.handleBreweryQuickFind}/>;
+                currentView = <BreweryFinder handleKeyPress={this.handleKeyPress} handleBreweryFindByUserInput={this.handleBreweryFindByUserInput} handleBreweryQuickFind={this.handleBreweryQuickFind}/>;
                 break;
             case 2:
                 currentView = <div>
